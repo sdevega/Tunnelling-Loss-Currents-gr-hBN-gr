@@ -22,8 +22,8 @@
 
 //double err=1.0e-21;  int nmax=6000;   // integration parameters
 
-// --- Integral 1: cond-val
-double Icv_vph(double vph){ // Integrand for  Int d_vph
+// --- Integral 1: val-cond
+double Ivc_vph(double vph){ // Integrand for  Int d_vph
    double mm,pp;
    double  I102m,I102p;
    kp02m = kp002m(Qi,vph,g0);
@@ -48,12 +48,12 @@ double Icv_vph(double vph){ // Integrand for  Int d_vph
    return mm+pp;
 }
 
-double Icv_Qi(double Qi_){ // integrand for  Int d_Qi
+double Ivc_Qi(double Qi_){ // integrand for  Int d_Qi
    Qi = Qi_;
 
    sum = 0.0;
    for(j=0;j<(nev-1);j++){
-      sum += 0.5*(Icv_vph(phi[j+1])+Icv_vph(phi[j]))*(phi[j+1]-phi[j]);
+      sum += 0.5*(Ivc_vph(phi[j+1])+Ivc_vph(phi[j]))*(phi[j+1]-phi[j]);
    }
 
    return Qi*sum;

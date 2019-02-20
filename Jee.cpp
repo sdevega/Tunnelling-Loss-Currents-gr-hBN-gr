@@ -28,15 +28,15 @@ int main(int argc, char **argv)
   char   ninw[150], nin[200];         // input files
 	char   nout[90];                    // output files
 
-  double Icv_tot,Icc_tot;
+  double Ivc_tot,Icc_tot;
 
 	//--- Output for the spectral tunnelling probability
   sprintf(nout,"Jee_Ef1-%g_Ef2-%g_d1_Vb%g.dat",Ef1*eV,Ef2*eV,Vb*eV);  
 	FILE *fout=fopen(nout,"w");
 
   // --- Tabulated frequencies     
-	sprintf(ninw,"../w2.dat");
-  //sprintf(ninw,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/w3.dat");
+	//sprintf(ninw,"../w2.dat");
+  sprintf(ninw,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/w3.dat");
 	int     nw = norow(ninw);
 	FILE *finw = fopen(ninw,"r");
 	double *ww = new double[nw];
@@ -51,8 +51,8 @@ int main(int argc, char **argv)
     g0 = (Ef1-Ef2-Vb+w)/vf; 
     eta0 = (Ef1-Ef2-Vb)/vf;
 
-    sprintf(nin,"../IntPhiWo/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
-    //sprintf(nin,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
+    //sprintf(nin,"../IntPhiWo/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
+    sprintf(nin,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
 			FILE   *fin = fopen(nin,"r");
 			double  *kpf = new double[nk]; // kp from file
 			double  *I1f = new double[nk]; // I1 from file
@@ -70,16 +70,16 @@ int main(int argc, char **argv)
 
     // --- trapezoidal, Simpson and quadratures much slower
     // ---    ->  rectangle sum (like trapezoidal)
-    Icv_tot=Icc_tot=0.0;
+    Ivc_tot=Icc_tot=0.0;
     for(i=0;i<(nk-1);i++){
-      Icv_tot+=0.5*(Icv_Qi(kpt[i+1])+Icv_Qi(kpt[i]))*(kpt[i+1]-kpt[i]);		
+      Icv_tot+=0.5*(Ivc_Qi(kpt[i+1])+Ivc_Qi(kpt[i]))*(kpt[i+1]-kpt[i]);		
       Icc_tot+=0.5*(Icc_Qi(kpt[i+1])+Icc_Qi(kpt[i]))*(kpt[i+1]-kpt[i]);		
     }
 
-    Jw_cv = Icv_tot/pi/pi/pi/vf;  
+    Jw_vc = Icv_tot/pi/pi/pi/vf;  
     Jw_cc = Icc_tot/pi/pi/pi/vf;  
-    Jw = Jw_cv+Jw_cc;
-	  fprintf(fout,"%g %g ",w*eV,Jw_cv*nm*nm);
+    Jw = Jw_vc+Jw_cc;
+	  fprintf(fout,"%g %g ",w*eV,Jw_vc*nm*nm);
     fprintf(fout,"%g %g \n",Jw_cc*nm*nm,Jw*nm*nm);	
     fflush(fout);
     printf("-->  w(eV)=%g   J=%g\n",ww[l],Jw*nm*nm);
