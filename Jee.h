@@ -20,8 +20,6 @@
 
 #include "J.h"
 
-//double err=1.0e-21;  int nmax=6000;   // integration parameters
-
 // --- Integral 1: val-cond
 double Ivc_vph(double vph){ // Integrand for  Int d_vph
    double mm,pp;
@@ -45,19 +43,15 @@ double Ivc_vph(double vph){ // Integrand for  Int d_vph
    else if(w>vf*(-2.0*Qi+kp02p-eta0)) pp=0.0;
    else  pp=kp02p*I102p*A2p*FD(En2p);
 
+   //return (mm+pp)/sqrt(1.0-vph*vph);
    return mm+pp;
 }
 
 double Ivc_Qi(double Qi_){ // integrand for  Int d_Qi
    Qi = Qi_;
 
-   sum = 0.0;
-   for(j=0;j<(nev-1);j++){
-      sum += 0.5*(Ivc_vph(phi[j+1])+Ivc_vph(phi[j]))*(phi[j+1]-phi[j]);
-   }
-
-   return Qi*sum;
-   //return Qi*Qi*qtrap(var1,var2,Icv_vph); // much slower
+   //return Qi*sum;
+   return Qi*Qi*apt.integrate(Ivc_vph,var1,var2); 
 }
 
 
@@ -86,17 +80,11 @@ double Icc_vph(double vph){ // integrand for  Int d_vph
    else if (w>vf*( kp01p-eta0)) pp=0.0;
    else    pp=kp01p*I101p*A1p*FD(En1)*FD(En2p);
 
+ //return  (mm+pp)/sqrt(1.0-vph*vph);
    return  mm+pp;
 }
 
 double Icc_Qi(double Qi_){ // Integrand for  Int d_Qi
    Qi = Qi_;
-
-   sum = 0.0;
-   for(j=0;j<(nev-1);j++){
-      sum += 0.5*(Icc_vph(phi[j+1])+Icc_vph(phi[j]))*(phi[j+1]-phi[j]);
-   }
-
-   return Qi*sum;
-   //return Qi*qtrap(var1,var2,Icc_vph); // much slower
+   return Qi*apt.integrate(Icc_vph,var1,var2); 
 }

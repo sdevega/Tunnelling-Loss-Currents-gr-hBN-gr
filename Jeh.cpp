@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 	FILE *fout=fopen(nout,"w");
 
   // --- Tabulated frequencies     
+  //sprintf(ninw,"./IntPhiWo/w2.dat"); // sonic
 	sprintf(ninw,"../w2.dat");
   //sprintf(ninw,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/w3.dat");
 	int     nw = norow(ninw);
@@ -43,14 +44,12 @@ int main(int argc, char **argv)
 	for(i=0;i<nw;++i) fscanf(finw,"%lf",ww+i);
 	fclose(finw);   
   
-  // --- Angle varphi
-  for(l=0;l<nev;l++) phi[l]=var1+l*(var2-var1)/(nev-1.0);
-
 	for(l=0;l<nw;l++){
-		w  = ww[l]/eV;
-    g0 = (Ef1+Ef2-Vb+w)/vf; 
+		w    = ww[l]/eV;
+    g0   = (Ef1+Ef2-Vb+w)/vf; 
     eta0 = (Ef1+Ef2-Vb)/vf;
     
+    //sprintf(nin,"./IntPhiWo/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]); // sonic
     sprintf(nin,"../IntPhiWo/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
     //sprintf(nin,"../2_EFdep_gr-hBN-gr_no-rotat/IntPhiW/IntW_Ef1-%g_Ef2-%g_d1_w%g.dat",Ef1*eV,Ef2*eV,ww[l]);
 			FILE   *fin = fopen(nin,"r");
@@ -68,8 +67,7 @@ int main(int argc, char **argv)
     
     Linear_interp I1s(kpt,I1t); // interpolation constructor
 
-    // --- trapezoidal, Simpson and quadratures much slower
-    // ---    ->  rectangle sum (like trapezoidal)
+    // --- rectangle-like integral    
     Icv_tot=Ivc_tot=Ivv_tot=Icc_tot=0.0;
     for(i=0;i<(nk-1);i++){
       Icv_tot+=0.5*(Icv_Qi(kpt[i+1])+Icv_Qi(kpt[i]))*(kpt[i+1]-kpt[i]);
@@ -86,11 +84,9 @@ int main(int argc, char **argv)
 	  fprintf(fout,"%g %g %g ",w*eV,Jw_cv*nm*nm,Jw_vc*nm*nm);
     fprintf(fout,"%g %g %g \n",Jw_vv*nm*nm,Jw_cc*nm*nm,Jw*nm*nm);	
     fflush(fout);
-    printf("-->  w(eV)=%g   J=%g\n",ww[l],Jw*nm*nm);
-    
+    //printf("-->  w(eV)=%g   J=%g\n",ww[l],Jw*nm*nm);
 	} 
 	delete [] ww;  ww  = NULL;
-  delete [] phi; phi = NULL;
 
   fclose(fout);
 

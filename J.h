@@ -6,7 +6,7 @@
    Full-RPA for the conductivity.
    T = 0K
    Different doping combinations for the graphene sheets.
-   Calculates Jeh(w) according to notes 15/feb/2019.
+   Calculates J(w) according to notes 15/feb/2019.
    I1(kp,w) is tabulated and interpolated (NR3)
    Combinations of Ef are: 
       Ef2=0.3eV    Ef1=0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0eV
@@ -16,9 +16,7 @@
 
 #include "sve/sve.h"
 #include "sve/interp_linear.h"
-#include "sve/qtraps.h"
-//#include "sve/qsimps.h"
-//#include "sve/qfints.h"
+#include "sve/adapt.h"
 
 
 // w2.dat and IntPhiWo
@@ -44,14 +42,13 @@ double infites=0.0;
 
 int i,j,l;
 double sum;
-int    nev  = 60;
 double var1 = 0.001;
 double var2 = 0.999*pi;
-double *phi=new double[nev];
 
 VecDoub kpt(nk); // tabulated kp vector for interpolating
 VecDoub I1t(nk); // tabulated I1 vector for interpolating
 Linear_interp I1s(kpt,I1t); // interpolation constructor
+Adapt apt(1.0e-6);
 
 // --- Fermi-Dirac distribution at T=0K (Step function)
 double FD(double En){
@@ -63,13 +60,13 @@ double FD(double En){
 // --- kp0: poles of the deltas
 // --- (1)
 double kp001m(double Qi,double vph,double g0){ 
-	double izq = Qi*cos(vph);
+	double izq   = Qi*cos(vph);
    double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
    double der;
    if(inqrt<0) der = 0.0;
 	else        der = sqrt(inqrt);
 	
-   double res = 0.5*(izq - der);
+   double res = (izq - der);
    if(res<0) return 0.0;
 	else      return res;
 }
@@ -81,7 +78,7 @@ double kp001p(double Qi,double vph,double g0){
    if(inqrt<0) der = 0.0;
 	else        der = sqrt(inqrt);
 	
-   double res = 0.5*(izq + der);
+   double res = izq + der;
    if(res<0) return 0.0;
 	else      return res;
 }
@@ -94,7 +91,7 @@ double kp002m(double Qi,double vph,double g0){
    if(inqrt<0) der = 0.0;
 	else        der = sqrt(inqrt);
 	
-   double res = 0.5*(izq - der);
+   double res = izq - der;
    if(res<0) return 0.0;
 	else      return res;
 }
@@ -106,34 +103,18 @@ double kp002p(double Qi,double vph,double g0){
    if(inqrt<0) der = 0.0;
 	else        der = sqrt(inqrt);
 	
-   double res = 0.5*(izq + der);
+   double res = izq + der;
    if(res<0) return 0.0;
 	else      return res;
 }
 
 // --- (3)
 double kp003m(double Qi,double vph,double g0){ 
-	double izq   = Qi*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*Qi - 2.0*Qi*g0;
-   double der;
-   if(inqrt<0) der = 0.0;
-	else        der = sqrt(inqrt);
-	
-   double res = 0.5*(izq - der);
-   if(res<0) return 0.0;
-	else      return res;
+	return kp001m(Qi,vph,g0);
 }
 
 double kp003p(double Qi,double vph,double g0){ 
-	double izq   = Qi*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*Qi - 2.0*Qi*g0;
-   double der;
-   if(inqrt<0) der = 0.0;
-	else        der = sqrt(inqrt);
-	
-   double res = 0.5*(izq + der);
-   if(res<0) return 0.0;
-	else      return res;
+	return kp001p(Qi,vph,g0);
 }
 
 // --- (4)
@@ -153,15 +134,16 @@ double kp004p(double Qi,double vph,double g0){
 double A01m(double Qi,double vph,double g0){ 
 	double k01   = kp001m(Qi,vph,g0);
    double num   = 2.0*Qi - g0 - k01*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) - g0*g0 - 2.0*Qi*g0;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
 	else         return num/sqrt(inqrt);
+  
 }
 
 double A01p(double Qi,double vph,double g0){ 
 	double k01   = kp001p(Qi,vph,g0);
    double num   = 2.0*Qi - g0 - k01*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) - g0*g0 - 2.0*Qi*g0;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
 	else         return num/sqrt(inqrt);
 }
@@ -188,7 +170,7 @@ double A02p(double Qi,double vph,double g0){
 double A03m(double Qi,double vph,double g0){ 
 	double k03   = kp003m(Qi,vph,g0);
    double num   = g0 - k03*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*Qi;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
 	else         return num/sqrt(inqrt);
 }
@@ -196,8 +178,7 @@ double A03m(double Qi,double vph,double g0){
 double A03p(double Qi,double vph,double g0){ 
 	double k03   = kp003p(Qi,vph,g0);
    double num   = g0 - k03*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*Qi - 2.0*Qi*g0;
-   double den;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
 	else         return num/sqrt(inqrt);
 }
@@ -206,8 +187,7 @@ double A03p(double Qi,double vph,double g0){
 double A04m(double Qi,double vph,double g0){ 
 	double k04   = kp004m(Qi,vph,g0);
    double num   = g0 + 2.0*Qi - k04*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*Qi - 2.0*Qi*g0;
-   double den;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
    else         return num/sqrt(inqrt);
 }
@@ -215,10 +195,9 @@ double A04m(double Qi,double vph,double g0){
 double A04p(double Qi,double vph,double g0){ 
 	double k04   = kp004p(Qi,vph,g0);
    double num   = g0 + 2.0*Qi - k04*cos(vph);
-   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*Qi - 2.0*Qi*g0;
-   double den;
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
-	else         return num/sqrt(inqrt);
+   else         return num/sqrt(inqrt);
 }
 
 

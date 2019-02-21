@@ -20,9 +20,8 @@
 
 #include "J.h"
 
-//double err=1.0e-21;  int nmax=6000;   // integration parameters
 
-// --- Integral 1: cond-val
+// --- Integral 1: val-cond
 double Ivc_vph(double vph){ // Integrand for  Int d_vph
    double mm,pp;
    double  I102m,I102p;
@@ -51,12 +50,5 @@ double Ivc_vph(double vph){ // Integrand for  Int d_vph
 
 double Ivc_Qi(double Qi_){ // integrand for  Int d_Qi
    Qi = Qi_;
-
-   sum = 0.0;
-   for(j=0;j<(nev-1);j++){
-      sum += 0.5*(Ivc_vph(phi[j+1])+Ivc_vph(phi[j]))*(phi[j+1]-phi[j]);
-   }
-
-   return Qi*sum;
-   //return Qi*Qi*qtrap(var1,var2,Icv_vph); // much slower
+   return Qi*apt.integrate(Ivc_vph,var1,var2);
 }
