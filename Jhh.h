@@ -27,8 +27,8 @@ double Ivc_vph(double vph){ // Integrand for  Int d_vph
    double  I102m,I102p;
    kp02m = kp002m(Qi,vph,g0);
    kp02p = kp002p(Qi,vph,g0);
-	A2m   = A02m(Qi,vph,g0);
-   A2p   = A02p(Qi,vph,g0); 
+	A2m   = B02m(Qi,vph,g0);
+   A2p   = B02p(Qi,vph,g0); 
    En1   = vf*Qi - Ef1;
    
    I102m = I1s.interp(kp02m);

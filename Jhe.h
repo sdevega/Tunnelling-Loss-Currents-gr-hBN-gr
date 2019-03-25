@@ -29,8 +29,8 @@ double Ivc_vph(double vph){ // Integrand for  Int d_vph
    kp02p = kp002p(Qi,vph,g0);
    Qf02m = Qf00(Qi,vph,kp02m);
    Qf02p = Qf00(Qi,vph,kp02p);
-	A2m   = A02m(Qi,vph,g0);
-   A2p   = A02p(Qi,vph,g0); 
+	A2m   = B02m(Qi,vph,g0);
+   A2p   = B02p(Qi,vph,g0); 
    En1   = vf*Qi - Ef1;
    En2m  = vf*Qf02m - Ef2;
    En2p  = vf*Qf02p - Ef2;

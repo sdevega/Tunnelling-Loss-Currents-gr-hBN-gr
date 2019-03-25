@@ -77,8 +77,8 @@ int main(int argc, char **argv)
     }
 
     Jw_cv = Icv_tot/pi/pi/pi/vf;  
-    Jw_vc = Icv_tot/pi/pi/pi/vf;  
-    Jw_vv = Icv_tot/pi/pi/pi/vf;  
+    Jw_vc = Ivc_tot/pi/pi/pi/vf;  
+    Jw_vv = Ivv_tot/pi/pi/pi/vf;  
     Jw_cc = Icc_tot/pi/pi/pi/vf;  
     Jw = Jw_cv+Jw_vc+Jw_vv+Jw_cc;
 	  fprintf(fout,"%g %g %g ",w*eV,Jw_cv*nm*nm,Jw_vc*nm*nm);

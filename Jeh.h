@@ -29,8 +29,8 @@ double Icv_vph(double vph){ // Integrand for  Int d_vph
    kp03p = kp003p(Qi,vph,g0);
    Qf03m = Qf00(Qi,vph,kp03m);
    Qf03p = Qf00(Qi,vph,kp03p);
-	A3m   = A03m(Qi,vph,g0);
-   A3p   = A03p(Qi,vph,g0); 
+	A3m   = B03m(Qi,vph,g0);
+   A3p   = B03p(Qi,vph,g0); 
    En1   = Ef1 - vf*Qi;
    En2m  = Ef2 - vf*Qf03m;
    En2p  = Ef2 - vf*Qf03p;
@@ -61,8 +61,8 @@ double Ivc_vph(double vph){ // Integrand for  Int d_vph
    double  I102m,I102p;
    kp02m = kp002m(Qi,vph,g0);
    kp02p = kp002p(Qi,vph,g0);
-	A2m   = A02m(Qi,vph,g0);
-   A2p   = A02p(Qi,vph,g0); 
+	A2m   = B02m(Qi,vph,g0);
+   A2p   = B02p(Qi,vph,g0); 
 
    I102m = I1s.interp(kp02m);
    if     (w<vf*(-2.0*Qi-kp02m-eta0)) mm=0.0;

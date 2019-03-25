@@ -38,6 +38,8 @@ double Qf01m,Qf01p,Qf02m,Qf02p;
 double Qf03m,Qf03p,Qf04m,Qf04p;
 double A1m,A2m,A3m,A4m;
 double A1p,A2p,A3p,A4p;
+double B1m,B2m,B3m,B4m;
+double B1p,B2p,B3p,B4p;
 double infites=0.0;
 
 int i,j,l;
@@ -195,6 +197,79 @@ double A04m(double Qi,double vph,double g0){
 double A04p(double Qi,double vph,double g0){ 
 	double k04   = kp004p(Qi,vph,g0);
    double num   = g0 + 2.0*Qi - k04*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+   else         return num/sqrt(inqrt);
+}
+
+
+// --- B = [1-Qbi*Qbf/Qi/Qf]/|F'(kp0)| 
+// ---     delta(F(Qi))=delta(Qi-kp0)/|F'(kp0)|
+// --- (1)
+double B01m(double Qi,double vph,double g0){ 
+	double k01   = kp001m(Qi,vph,g0);
+   double num   = - g0 + k01*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+  
+}
+
+double B01p(double Qi,double vph,double g0){ 
+	double k01   = kp001p(Qi,vph,g0);
+   double num   = - g0 + k01*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+}
+
+
+// --- (2)
+double B02m(double Qi,double vph,double g0){ 
+	double k02   = kp002m(Qi,vph,g0);
+   double num   = - g0 - 2.0*Qi + k02*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+}
+
+double B02p(double Qi,double vph,double g0){ 
+	double k02   = kp002p(Qi,vph,g0);
+   double num   = - g0 - 2.0*Qi + k02*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+}
+
+// --- (3)
+double B03m(double Qi,double vph,double g0){ 
+	double k03   = kp003m(Qi,vph,g0);
+   double num   = g0 - 2.0*Qi + k03*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+}
+
+double B03p(double Qi,double vph,double g0){ 
+	double k03   = kp003p(Qi,vph,g0);
+   double num   = g0 - 2.0*Qi + k03*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 - 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+	else         return num/sqrt(inqrt);
+}
+
+// --- (4)
+double B04m(double Qi,double vph,double g0){ 
+	double k04   = kp004m(Qi,vph,g0);
+   double num   = g0 + k04*cos(vph);
+   double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
+   if(inqrt<=0) return 0.0;
+   else         return num/sqrt(inqrt);
+}
+
+double B04p(double Qi,double vph,double g0){ 
+	double k04   = kp004p(Qi,vph,g0);
+   double num   = g0 + k04*cos(vph);
    double inqrt = Qi*Qi*cos(vph)*cos(vph) + g0*g0 + 2.0*Qi*g0;
    if(inqrt<=0) return 0.0;
    else         return num/sqrt(inqrt);
